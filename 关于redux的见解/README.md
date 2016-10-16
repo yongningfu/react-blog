@@ -1,15 +1,17 @@
 ## redux内部的触发机制
 
-我们知道redux是通过 Provider 套在根组件的外包
+我们知道redux是通过 Provider 套在根组件的外面
 然后里面的受控组件通过 connect函数进行传递dispatch 和 state的
 那么这里面究竟发生了什么呢  Provider的作用是啥  connect的作用呢？
 
 ### 预先知识点
 1. store.getState() 注意这个函数返回的是store里面的state对象的复制对象 注意这个是一个新的复制对象
 
-2.  React本身的组件并不是数据驱动视图的， 它内部维持一个虚拟DOM， 如果对一个组件进行修改的话 先是调用组件的render方法，修改虚拟dom, 但是修改虚拟dom后 不会立即和和真实DOM同步 只有在setState或者forceUpdate方法调用后才进行刷新同步---比如一个组件接收的属性 这个属性值是一个对象 这个对象后面发生改变了 然后它会调用组件的render方法 修改虚拟dom ,但是不会立即更新真实dom 只有调用setState或forceUpdate才更新真实dom
+2.  React本身的组件并不是数据驱动视图的， 它内部维持一个虚拟DOM， 如果对一个组件进行修改的话 先是调用组件的render方法，修改虚拟dom, 但是修改虚拟dom后 不会立即和和真实DOM同步 只有在setState或者forceUpdate方法调用后才进行刷新同步---比如一个组件接收的属性 这个属性值是一个对象 这个对象后面发生改变了 然后它会调用组件的render方法 修改虚拟dom ,但是不会立即更新真实dom 只有调用setState或forceUpdate才更新真实dom--总结说就是: ```属性是和虚拟dom绑定的，属性变化有引器虚拟dom变化 但是不会引起真是dom变化 真是dom需要setState 或者 forceUpdate才能出发重新渲染界面变化```
 
-** 例子 **
+3. 如何父组件调用setState 那么它下面的子组件同样也会重新渲染--即利用虚拟dom和真实dom比较渲染
+
+**例子**
 ```html
 <!DOCTYPE html>
 <html>
@@ -56,12 +58,12 @@
 
 ```
 
-3. redux中的思想
+## redux中的思想
 
-  既然要说明 redux中的Provider connect是如何实现的话  那我们就先不用Provider 和 connect
-  看看如何才能实现  利用redux来管理我们应用的状态
+  既然要说明 redux中的Provider connect是如何实现的话, 那我们就先不用Provider 和 connect,
+  看看如何才能实现, 利用redux来管理我们应用的状态
 
-  ** 利用redux的  subscribe dispatch 函数 **
+  **利用redux的  subscribe dispatch 函数**
 
 ```javascript
 
@@ -117,7 +119,7 @@ render(
 
 通过上面的例子 我们就大概的知道了redux的 Provider 和 connect工作过程
 
-4. 还有有个问题就是 如果父组件setState 那么它的子组件会不会重新渲染呢？
+## 还有有个问题就是 如果父组件setState 那么它的子组件会不会重新渲染呢？
 答案是肯定的，那么结合redux的思想 我们只要 顶级的组件App上面套一个 Provider, 这个会给顶级根组件 订阅(subscribe)一个setState, 如果有哪个子组件或者
 它自己 调用了dispatch的话 会执行这个setState 也就是整个应用进行一次的dom更新(效率也很高 因为更新之前有一次虚拟dom 和 真实dom 的差异匹配工作)
 
@@ -197,9 +199,9 @@ render(
 );
 ```
 
-5. 如果一个react根实例已经初始化了以后， 其他后面动态加载进来的组件(通过ReactDOM强制渲染加载进来) 状态如何通过中央数据管理的问题？
+## 如果一个react根实例已经初始化了以后， 其他后面动态加载进来的组件(通过ReactDOM强制渲染加载进来) 状态如何通过中央数据管理的问题？
 
-** 直接上代码吧 里面有注释 **
+**直接上代码吧 里面有注释**
 ```javascript
 import React from 'react'
 import { render } from 'react-dom'
@@ -311,7 +313,9 @@ render(
 //实现动态Dom注入组件的的管理
 ```
 
-6. 上面可以看到 我们是利用原生的redux 通过自己订阅监听函数来使根组件App强制重新渲染
+## 利用react-redux对上面进行改进
+
+  上面可以看到 我们是利用原生的redux 通过自己订阅监听函数来使根组件App强制重新渲染
    然后它的子组件也跟着重新渲染
 
    那如何利用  react-redux这个库改进呢？
