@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <style type="text/css">
+        .animationdemo-enter {
+            opacity: .2;
+            transition: opacity 10s;
+        }
+        .animationdemo-enter-active {
+            opacity: 1;
+        }
+        .animationdemo-leave {
+            transform: scale(1);
+            opacity: 1;
+            transition: all .5s ease-in;
+        }
+        .animationdemo-leave-active {
+            transform: scale(5);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="example"></div>
+<div id="example2"></div>
+
+<script type="text/javascript" src="/static/common.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/bundle.js" charset="utf-8"></script>
+</body>
+</html>

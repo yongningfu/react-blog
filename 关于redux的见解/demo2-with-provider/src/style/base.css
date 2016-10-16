@@ -1,0 +1,20 @@
+.student {
+    float: left;
+    margin: 20px;
+}
+.student-enter {
+    opacity: .2;
+    transition: opacity 1s;
+}
+.student-enter-active {
+    opacity: 1;
+}
+.student-leave {
+    transform: scale(1);
+    opacity: 1;
+    transition: all .5s ease-in;
+}
+.student-leave-active {
+    transform: scale(5);
+    opacity: 0;
+}
